@@ -8,17 +8,25 @@ on:
     paths:
       - "extension.yml"
 
+permissions:
+  contents: read
+
+# Serialize tag pushes; never cancel one mid-push.
+concurrency:
+  group: tag-version-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   tag-if-needed:
+    name: Tag if needed
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write  # Pushes the vX.Y.Z tag to origin.
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          # Needed: this job pushes a tag back to origin.
-          persist-credentials: true
+          persist-credentials: true  # Needed: this job pushes a tag back to origin.
 
       - name: Parse version from extension.yml
         id: meta
