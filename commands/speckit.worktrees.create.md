@@ -13,6 +13,7 @@ $ARGUMENTS
 ```
 
 You **MUST** consider the user input before proceeding (if not empty). The user may specify:
+
 - A branch name (e.g., `005-user-auth`)
 - `current` to create a worktree for the current branch
 - `--in-place` or `--no-worktree` to skip worktree creation entirely

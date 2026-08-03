@@ -13,6 +13,7 @@ $ARGUMENTS
 ```
 
 You **MUST** consider the user input before proceeding (if not empty). The user may specify:
+
 - A branch name (e.g., `005-api-gateway`) — remove that worktree only
 - `merged` — remove all merged worktrees
 - `stale` — remove stale worktrees (30+ days inactive)

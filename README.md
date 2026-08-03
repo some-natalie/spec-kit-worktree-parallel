@@ -56,7 +56,7 @@ If you keep **`auto_create: true`**, you still get in-repo worktrees after speci
 
 Worktrees live inside the repo under `.worktrees/` (auto-gitignored):
 
-```
+```text
 my-project/
 ├── .worktrees/
 │   ├── 005-user-auth/           ← worktree
@@ -71,7 +71,7 @@ Self-contained — everything stays in one directory. `.worktrees/` is added to 
 
 Each worktree is a sibling directory of the primary clone:
 
-```
+```text
 parent/
 ├── my-project/                  ← primary checkout (main)
 ├── my-project--005-user-auth/   ← worktree (005-user-auth branch)

@@ -115,7 +115,6 @@ fi
 if [[ -z "$WORKTREE_PATH_OVERRIDE" ]]; then
   LAYOUT=$(load_config_value "layout" "$LAYOUT")
 fi
-AUTO_CREATE=$(load_config_value "auto_create" "true")
 SIBLING_PATTERN=$(load_config_value "sibling_pattern" '{{repo}}--{{branch}}')
 DOTWORKTREES_DIR=$(load_config_value "dotworktrees_dir" ".worktrees")
 

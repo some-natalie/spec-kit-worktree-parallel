@@ -1,0 +1,12 @@
+---
+# MD013 line-length: prose wraps at the editor, not at 80 chars
+MD013: false
+# MD033 inline HTML: used for badges and details blocks
+MD033: false
+# MD041 first line must be a top-level heading
+MD041: false
+# MD060 table pipe alignment: purely cosmetic, renders identically
+MD060: false
+# Same heading text is fine under different parents
+MD024:
+  siblings_only: true

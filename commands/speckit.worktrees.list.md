@@ -13,6 +13,7 @@ $ARGUMENTS
 ```
 
 You **MUST** consider the user input before proceeding (if not empty). The user may request:
+
 - `compact` — one-line-per-worktree summary
 - `stale` — show only stale/idle worktrees
 - A specific branch name — show details for that worktree only

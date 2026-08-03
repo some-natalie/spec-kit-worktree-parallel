@@ -13,6 +13,7 @@ $ARGUMENTS
 ```
 
 You **MUST** consider the user input before proceeding. The user input should include:
+
 - A feature branch name or slug (for example `005-user-auth`)
 - The feature description to specify
 - Optional worktree flags accepted by `/speckit.worktrees.create`, such as `--layout sibling`, `--path <dir>`, or `--base-ref HEAD`
