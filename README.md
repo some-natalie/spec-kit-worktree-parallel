@@ -114,12 +114,12 @@ auto_create: true           # Cursor + /worktree users: set false to avoid in-re
 sibling_pattern: "{{repo}}--{{branch}}"
 dotworktrees_dir: ".worktrees"
 
-# Optional VS Code handoff for /speckit.worktrees.specify
+# Optional editor handoff for /speckit.worktrees.specify
 vscode_open_after_create: false
 vscode_open_mode: "new-window"   # new-window | reuse-window | print-command
 ```
 
-The handoff always runs the literal `code` command. That is deliberately not configurable — this file lives in the repository being worked on, so a configurable command name here would let repository content decide what gets executed.
+The editor command is not set here. It defaults to `code` and is overridden with the `SPECIFY_WORKTREE_OPEN_CMD` environment variable — see [Editor handoff](#editor-handoff). This file lives in the repository being worked on, so a command name read from it would let repository content decide what gets executed.
 
 ## How worktrees stay isolated
 
@@ -157,9 +157,11 @@ For VS Code, the most reliable variant remains one window per active worktree:
 4. Commit, push, and open the PR from the worktree.
 5. Close the worktree window and run `/speckit.worktrees.clean` from the primary checkout when done.
 
-### VS Code handoff
+### Editor handoff
 
-`/speckit.worktrees.specify` can hand the created worktree to VS Code via the `code` CLI:
+`/speckit.worktrees.specify` can hand the created worktree to your editor. This is the only part of the extension that is editor-aware, and it is off by default — `worktree-config.yml`, `create`, `list`, and `clean` know nothing about editors, so every editor gets the same worktree behavior.
+
+The default command is the VS Code `code` CLI:
 
 ```text
 /speckit.worktrees.specify 005-user-auth Build sign-in --open-vscode
@@ -178,7 +180,22 @@ vscode_open_after_create: true
 vscode_open_mode: "new-window"
 ```
 
-Use `vscode_open_mode: "reuse-window"` only when you explicitly want VS Code to replace the current window with the worktree. If the `code` CLI is unavailable, or if `vscode_open_mode: "print-command"` is set, the command reports the exact `code -n <worktree-path>` command to run manually.
+Use `vscode_open_mode: "reuse-window"` only when you explicitly want VS Code to replace the current window with the worktree. If `vscode_open_mode: "print-command"` is set, the command prints the command instead of running it. If the CLI is unavailable, it reports the worktree path so you can open it yourself.
+
+#### Other editors — Zed, Cursor, JetBrains, terminal editors
+
+Set `SPECIFY_WORKTREE_OPEN_CMD` to the CLI you want. It must name a single executable, which receives the worktree path as its only argument:
+
+```bash
+export SPECIFY_WORKTREE_OPEN_CMD=zed          # or cursor, code-insiders, idea…
+export SPECIFY_WORKTREE_OPEN_CMD=/full/path/to/editor   # when it is not on PATH
+```
+
+This is an environment variable rather than a config key on purpose. `worktree-config.yml` lives in the repository being worked on, so a command name read from there would let repository content decide what gets executed on your machine. Your environment is yours; a cloned repo is not.
+
+`-n` and `-r` are VS Code flags and are only passed to `code`. Any other command gets the path alone, since window handling differs per editor.
+
+For terminal editors like Vim, Neovim, Emacs, or Helix there is nothing useful to automate — "open this directory in a new window" is not a concept there. Leave `vscode_open_after_create: false`, take the printed worktree path, and `cd` to it. Setting `layout: "sibling"` in `worktree-config.yml` is usually the more helpful knob: each feature becomes its own top-level directory instead of living under `.worktrees/`.
 
 ## Hook
 
@@ -210,6 +227,7 @@ bash scripts/bash/create-worktree.sh --in-place 005-user-auth
 | Variable | Description |
 |----------|-------------|
 | `SPECIFY_WORKTREE_PATH` | Override computed worktree path entirely |
+| `SPECIFY_WORKTREE_OPEN_CMD` | Editor CLI for the handoff (default `code`); see [Editor handoff](#editor-handoff) |
 | `SPECIFY_FEATURE` | Current feature name (set by spec-kit) |
 
 ## Related
