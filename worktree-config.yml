@@ -27,4 +27,8 @@ vscode_open_after_create: false
 #   reuse-window  — code -r <worktree-path> (explicit opt-in)
 #   print-command — only print the command to run
 vscode_open_mode: "new-window"
-vscode_command: "code"
+
+# The editor command itself is not configurable here. This file lives in the
+# repository, so a command name read from it would let repository content decide
+# what gets executed. To use another editor, set SPECIFY_WORKTREE_OPEN_CMD in
+# your environment (e.g. zed, cursor, code-insiders, or an absolute path).

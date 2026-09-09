@@ -110,6 +110,42 @@ assert_file_contains "existing entry preserved" "$TEMP_DIR/.gitignore" "node_mod
 assert_file_contains ".worktrees/ appended" "$TEMP_DIR/.gitignore" ".worktrees/"
 cleanup; trap - EXIT
 
+# Test 6: a .gitignore whose last line has no trailing newline is not corrupted
+echo "[6] does not extend a last line that lacks a trailing newline"
+TEMP_DIR=$(setup_temp_repo)
+trap cleanup EXIT
+printf '.env' > "$TEMP_DIR/.gitignore"
+run_post_install
+assert_file_contains ".env still its own line" "$TEMP_DIR/.gitignore" ".env"
+assert_file_contains ".worktrees/ on a new line" "$TEMP_DIR/.gitignore" ".worktrees/"
+TOTAL=$((TOTAL + 1))
+touch "$TEMP_DIR/.env"
+if git -C "$TEMP_DIR" check-ignore -q .env 2>/dev/null; then
+  PASS=$((PASS + 1)); echo "  PASS: .env is still ignored by git"
+else
+  FAIL=$((FAIL + 1)); echo "  FAIL: .env is no longer ignored by git"
+fi
+cleanup; trap - EXIT
+
+# Test 7: a config value that would escape the repo is refused
+echo "[7] rejects traversal in dotworktrees_dir"
+TEMP_DIR=$(setup_temp_repo)
+trap cleanup EXIT
+echo 'dotworktrees_dir: "../../../../tmp/escape"' > "$TEMP_DIR/.specify/extensions/worktrees/worktree-config.yml"
+TOTAL=$((TOTAL + 1))
+if (cd "$TEMP_DIR" && bash "$POST_INSTALL" >/dev/null 2>&1); then
+  FAIL=$((FAIL + 1)); echo "  FAIL: traversal config was accepted"
+else
+  PASS=$((PASS + 1)); echo "  PASS: traversal config rejected with non-zero exit"
+fi
+TOTAL=$((TOTAL + 1))
+if grep -q '\.\.' "$TEMP_DIR/.gitignore" 2>/dev/null; then
+  FAIL=$((FAIL + 1)); echo "  FAIL: traversal path was written to .gitignore"
+else
+  PASS=$((PASS + 1)); echo "  PASS: nothing written to .gitignore"
+fi
+cleanup; trap - EXIT
+
 echo ""
 echo "=== Results: $PASS/$TOTAL passed, $FAIL failed ==="
 

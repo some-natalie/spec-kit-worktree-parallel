@@ -1,14 +1,24 @@
 # Changelog
 
-## Unreleased
+## 1.4.0
+
+### Security
+
+- `post-install.sh` and `create-worktree.sh` no longer extend the last line of a `.gitignore` that lacks a trailing newline. Previously the entry was concatenated onto that line (`.env` + `.worktrees/` → `.env.worktrees/`), which silently stopped git from ignoring it
+- `dotworktrees_dir` and `sibling_pattern` are rejected when absolute or containing `..`. Because `worktree-config.yml` lives in the repository being worked on, these values could previously place a worktree anywhere the user could write
+- Branch names are validated with `git check-ref-format`, and a leading `-` is refused so it cannot be read as a git option
+- Values interpolated into `--json` output are now escaped. An unescaped quote could emit a second `path` key, which the calling agent treats as the project root
+- `vscode_command` has been removed from the configuration, so repository content can no longer choose a command to execute. The editor command now defaults to `code` and is overridden with the `SPECIFY_WORKTREE_OPEN_CMD` environment variable, which belongs to the machine rather than the cloned repository
 
 ### Added
 
+- `SPECIFY_WORKTREE_OPEN_CMD` environment variable to point the editor handoff at Zed, Cursor, `code-insiders`, JetBrains, or an absolute path to a CLI that is not on `PATH`. `-n` and `-r` remain `code`-only, since window handling differs per editor
 - `/speckit.worktrees.specify` command for a worktree-first specify workflow: create or reuse the feature worktree before writing spec artifacts, then continue the normal Spec Kit flow from the worktree root
 - VS Code handoff guidance for `/speckit.worktrees.specify`: optional `--open-vscode` behavior, configurable `code -n <worktree-path>` new-window default, and explicit reuse/print modes
 
 ### Changed
 
+- Repository, download, and documentation URLs now point at `some-natalie/spec-kit-worktree-parallel`, the repository that publishes this extension
 - README now documents the recommended response to "pre-hook for specify": use an explicit worktree-first command unless Spec Kit itself can also switch the active project root for the rest of `/speckit.specify`
 
 ## 1.3.2 (2026-04-15)

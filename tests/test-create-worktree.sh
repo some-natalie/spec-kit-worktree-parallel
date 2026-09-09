@@ -220,6 +220,62 @@ output=$(bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" feature/
 assert_contains "slashes replaced" 'feature-user-auth' "$output"
 cleanup; trap - EXIT
 
+# Test 13: invalid branch names are refused before touching git or the output
+echo "[13] rejects invalid branch names"
+TEMP_DIR=$(setup_temp_repo)
+trap cleanup EXIT
+assert_exit "rejects .. segment" 1 bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" 'x/../y'
+assert_exit "rejects leading dash" 1 bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" '-foo'
+assert_exit "rejects JSON injection payload" 1 \
+  bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" 'x","path":"/tmp/evil'
+assert_exit "still accepts a valid name" 0 bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" 005-ok
+
+# git permits a double quote in a refname, so the JSON must escape it rather than
+# emit a second "path" key that the calling agent could mistake for the real root.
+output=$(bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" 'a"b')
+TOTAL=$((TOTAL + 1))
+if printf '%s' "$output" | python3 -c '
+import json, sys
+d = json.load(sys.stdin)
+assert d["branch"] == "a\"b", d["branch"]
+assert d["path"].endswith("/.worktrees/a\"b"), d["path"]
+assert len(d) == 5, list(d)
+' 2>/dev/null; then
+  PASS=$((PASS + 1)); echo "  PASS: quoted branch yields valid, non-injectable JSON"
+else
+  FAIL=$((FAIL + 1)); echo "  FAIL: quoted branch produced bad JSON: $output"
+fi
+cleanup; trap - EXIT
+
+# Test 14: repo-controlled config cannot place a worktree outside the repo
+echo "[14] rejects traversal in config path values"
+TEMP_DIR=$(setup_temp_repo)
+trap cleanup EXIT
+mkdir -p "$TEMP_DIR/.specify/extensions/worktrees"
+CONFIG="$TEMP_DIR/.specify/extensions/worktrees/worktree-config.yml"
+printf 'layout: "nested"\ndotworktrees_dir: "../../../../tmp/escape"\n' > "$CONFIG"
+assert_exit "rejects dotworktrees_dir traversal" 1 \
+  bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" 005-escape
+printf 'layout: "sibling"\nsibling_pattern: "../../../../tmp/escape/{{branch}}"\n' > "$CONFIG"
+assert_exit "rejects sibling_pattern traversal" 1 \
+  bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" 005-escape
+cleanup; trap - EXIT
+
+# Test 15: .gitignore last line is not extended when it lacks a trailing newline
+echo "[15] preserves a .gitignore last line with no trailing newline"
+TEMP_DIR=$(setup_temp_repo)
+trap cleanup EXIT
+printf '.env' > "$TEMP_DIR/.gitignore"
+bash "$CREATE_SCRIPT" --json --repo-root "$TEMP_DIR" 005-newline >/dev/null 2>&1
+TOTAL=$((TOTAL + 1))
+if grep -qxF ".env" "$TEMP_DIR/.gitignore" && grep -qxF ".worktrees/" "$TEMP_DIR/.gitignore"; then
+  PASS=$((PASS + 1)); echo "  PASS: .env and .worktrees/ are separate lines"
+else
+  FAIL=$((FAIL + 1))
+  echo "  FAIL: .gitignore was corrupted: [$(cat "$TEMP_DIR/.gitignore")]"
+fi
+cleanup; trap - EXIT
+
 # --- summary ---
 echo ""
 echo "=== Results: $PASS/$TOTAL passed, $FAIL failed ==="

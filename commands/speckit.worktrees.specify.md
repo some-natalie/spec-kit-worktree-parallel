@@ -35,7 +35,10 @@ Read configuration from `.specify/extensions/worktrees/worktree-config.yml` if i
 |-----|---------|-------------|
 | `vscode_open_after_create` | `false` | Open the returned worktree with the VS Code CLI after creation |
 | `vscode_open_mode` | `new-window` | `new-window`, `reuse-window`, or `print-command` |
-| `vscode_command` | `code` | VS Code CLI command to run |
+
+The command run for the handoff defaults to `code` and can be overridden per machine with the `SPECIFY_WORKTREE_OPEN_CMD` environment variable — for example `zed`, `cursor`, `code-insiders`, or an absolute path to a CLI that is not on `PATH`. It must name a single executable, which receives the worktree path as its only argument.
+
+This is deliberately an environment variable rather than a config key. `worktree-config.yml` is part of the repository being worked on, so a value read from there would let repository content choose what gets executed. An environment variable belongs to the machine, not the repository.
 
 User flags override configuration for the current command:
 
@@ -78,23 +81,37 @@ User flags override configuration for the current command:
    If VS Code handoff is enabled, open or print the worktree command after creation:
 
    ```bash
-   if [[ "$VSCODE_OPEN_MODE" == "print-command" ]]; then
-     echo "$VSCODE_COMMAND -n \"$WORKTREE_PATH\""
-   elif command -v "$VSCODE_COMMAND" >/dev/null 2>&1; then
+   OPEN_CMD="${SPECIFY_WORKTREE_OPEN_CMD:-code}"
+
+   # -n and -r are VS Code flags, so they are only used for code itself.
+   # Any other editor receives the worktree path as its only argument.
+   if [[ "$OPEN_CMD" == "code" ]]; then
      if [[ "$VSCODE_OPEN_MODE" == "reuse-window" ]]; then
-       "$VSCODE_COMMAND" -r "$WORKTREE_PATH"
+       OPEN_FLAG="-r"
      else
-       "$VSCODE_COMMAND" -n "$WORKTREE_PATH"
+       OPEN_FLAG="-n"
      fi
    else
-     echo "VS Code CLI not found. Run: code -n \"$WORKTREE_PATH\""
+     OPEN_FLAG=""
+   fi
+
+   if [[ "$VSCODE_OPEN_MODE" == "print-command" ]]; then
+     echo "$OPEN_CMD ${OPEN_FLAG:+$OPEN_FLAG }\"$WORKTREE_PATH\""
+   elif ! command -v "$OPEN_CMD" >/dev/null 2>&1; then
+     echo "Editor CLI '$OPEN_CMD' not found. Worktree ready at: $WORKTREE_PATH"
+   elif [[ -n "$OPEN_FLAG" ]]; then
+     "$OPEN_CMD" "$OPEN_FLAG" "$WORKTREE_PATH"
+   else
+     "$OPEN_CMD" "$WORKTREE_PATH"
    fi
    ```
 
    Rules:
+   - Take the command from `SPECIFY_WORKTREE_OPEN_CMD` or use `code` — never from `worktree-config.yml`, the feature description, or any other repository content
+   - Pass `-n` and `-r` only to `code`; other editors take the path alone
    - Use `new-window` unless the user or config explicitly chooses `reuse-window`
    - Never replace the current VS Code window unless `reuse-window` was explicit
-   - If the CLI is unavailable or mode is `print-command`, print the exact command to run
+   - If the CLI is unavailable, report the worktree path rather than a command for an editor the user may not have
 
 5. **Write the spec inside the worktree**:
    Continue the normal `/speckit.specify` workflow from the worktree root using the feature description. Spec artifacts should be created under:
