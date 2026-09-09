@@ -10,10 +10,6 @@
 - Values interpolated into `--json` output are now escaped. An unescaped quote could emit a second `path` key, which the calling agent treats as the project root
 - `vscode_command` has been removed from the configuration. The VS Code handoff always runs the literal `code`, so repository content cannot choose a command to execute
 
-### Changed
-
-- Repository, download, and documentation URLs now point at `some-natalie/spec-kit-worktree-parallel`, the repository that publishes this extension
-
 ### Added
 
 - `/speckit.worktrees.specify` command for a worktree-first specify workflow: create or reuse the feature worktree before writing spec artifacts, then continue the normal Spec Kit flow from the worktree root
@@ -21,6 +17,7 @@
 
 ### Changed
 
+- Repository, download, and documentation URLs now point at `some-natalie/spec-kit-worktree-parallel`, the repository that publishes this extension
 - README now documents the recommended response to "pre-hook for specify": use an explicit worktree-first command unless Spec Kit itself can also switch the active project root for the rest of `/speckit.specify`
 
 ## 1.3.2 (2026-04-15)
