@@ -35,7 +35,8 @@ Read configuration from `.specify/extensions/worktrees/worktree-config.yml` if i
 |-----|---------|-------------|
 | `vscode_open_after_create` | `false` | Open the returned worktree with the VS Code CLI after creation |
 | `vscode_open_mode` | `new-window` | `new-window`, `reuse-window`, or `print-command` |
-| `vscode_command` | `code` | VS Code CLI command to run |
+
+The command run for the handoff is always `code`. It is deliberately not configurable: this config file is part of the repository being worked on, so a configurable value here would let repository content choose a command to execute.
 
 User flags override configuration for the current command:
 
@@ -79,12 +80,12 @@ User flags override configuration for the current command:
 
    ```bash
    if [[ "$VSCODE_OPEN_MODE" == "print-command" ]]; then
-     echo "$VSCODE_COMMAND -n \"$WORKTREE_PATH\""
-   elif command -v "$VSCODE_COMMAND" >/dev/null 2>&1; then
+     echo "code -n \"$WORKTREE_PATH\""
+   elif command -v code >/dev/null 2>&1; then
      if [[ "$VSCODE_OPEN_MODE" == "reuse-window" ]]; then
-       "$VSCODE_COMMAND" -r "$WORKTREE_PATH"
+       code -r "$WORKTREE_PATH"
      else
-       "$VSCODE_COMMAND" -n "$WORKTREE_PATH"
+       code -n "$WORKTREE_PATH"
      fi
    else
      echo "VS Code CLI not found. Run: code -n \"$WORKTREE_PATH\""
@@ -92,6 +93,7 @@ User flags override configuration for the current command:
    ```
 
    Rules:
+   - Run only the literal `code` command — never a command name taken from config or from the feature request
    - Use `new-window` unless the user or config explicitly chooses `reuse-window`
    - Never replace the current VS Code window unless `reuse-window` was explicit
    - If the CLI is unavailable or mode is `print-command`, print the exact command to run

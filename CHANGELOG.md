@@ -1,6 +1,18 @@
 # Changelog
 
-## Unreleased
+## 1.4.0
+
+### Security
+
+- `post-install.sh` and `create-worktree.sh` no longer extend the last line of a `.gitignore` that lacks a trailing newline. Previously the entry was concatenated onto that line (`.env` + `.worktrees/` → `.env.worktrees/`), which silently stopped git from ignoring it
+- `dotworktrees_dir` and `sibling_pattern` are rejected when absolute or containing `..`. Because `worktree-config.yml` lives in the repository being worked on, these values could previously place a worktree anywhere the user could write
+- Branch names are validated with `git check-ref-format`, and a leading `-` is refused so it cannot be read as a git option
+- Values interpolated into `--json` output are now escaped. An unescaped quote could emit a second `path` key, which the calling agent treats as the project root
+- `vscode_command` has been removed from the configuration. The VS Code handoff always runs the literal `code`, so repository content cannot choose a command to execute
+
+### Changed
+
+- Repository, download, and documentation URLs now point at `some-natalie/spec-kit-worktree-parallel`, the repository that publishes this extension
 
 ### Added
 

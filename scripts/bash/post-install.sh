@@ -15,9 +15,22 @@ if [[ -f "$CONFIG_FILE" ]]; then
   if [[ -n "$val" ]]; then DOTWORKTREES_DIR="$val"; fi
 fi
 
+# The config file is repo-controlled, so refuse a value that would escape the repo.
+case "$DOTWORKTREES_DIR" in
+  /* | *..*)
+    echo "Error: config 'dotworktrees_dir' must be a relative path without '..' (got '$DOTWORKTREES_DIR')" >&2
+    exit 1
+    ;;
+esac
+
 GITIGNORE="$REPO_ROOT/.gitignore"
 
 if ! grep -qxF "$DOTWORKTREES_DIR/" "$GITIGNORE" 2>/dev/null; then
-  echo "$DOTWORKTREES_DIR/" >> "$GITIGNORE"
+  # Without this newline guard the entry would extend the current last line
+  # instead of adding one — '.env' + '.worktrees/' un-ignores .env.
+  if [[ -s "$GITIGNORE" ]] && [[ -n "$(tail -c1 "$GITIGNORE")" ]]; then
+    echo "" >>"$GITIGNORE"
+  fi
+  echo "$DOTWORKTREES_DIR/" >>"$GITIGNORE"
   echo "[worktrees] Added '$DOTWORKTREES_DIR/' to .gitignore" >&2
 fi

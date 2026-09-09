@@ -1,6 +1,6 @@
 # spec-kit-worktree-parallel
 
-[![Tests](https://github.com/dango85/spec-kit-worktree-parallel/actions/workflows/test.yml/badge.svg)](https://github.com/dango85/spec-kit-worktree-parallel/actions/workflows/test.yml)
+[![Tests](https://github.com/some-natalie/spec-kit-worktree-parallel/actions/workflows/test.yml/badge.svg)](https://github.com/some-natalie/spec-kit-worktree-parallel/actions/workflows/test.yml)
 
 **Contributing:** use a **branch + pull request** into `main` — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -19,7 +19,7 @@ This extension **does not** change another extension’s configuration on instal
 ## Installation
 
 ```bash
-specify extension add worktrees --from https://github.com/dango85/spec-kit-worktree-parallel/archive/refs/tags/v1.3.2.zip
+specify extension add worktrees --from https://github.com/some-natalie/spec-kit-worktree-parallel/archive/refs/tags/v1.4.0.zip
 ```
 
 ## Cursor IDE: best results with Spec Kit
@@ -117,8 +117,9 @@ dotworktrees_dir: ".worktrees"
 # Optional VS Code handoff for /speckit.worktrees.specify
 vscode_open_after_create: false
 vscode_open_mode: "new-window"   # new-window | reuse-window | print-command
-vscode_command: "code"
 ```
+
+The handoff always runs the literal `code` command. That is deliberately not configurable — this file lives in the repository being worked on, so a configurable command name here would let repository content decide what gets executed.
 
 ## How worktrees stay isolated
 
@@ -175,7 +176,6 @@ You can make that the project default in `.specify/extensions/worktrees/worktree
 ```yaml
 vscode_open_after_create: true
 vscode_open_mode: "new-window"
-vscode_command: "code"
 ```
 
 Use `vscode_open_mode: "reuse-window"` only when you explicitly want VS Code to replace the current window with the worktree. If the `code` CLI is unavailable, or if `vscode_open_mode: "print-command"` is set, the command reports the exact `code -n <worktree-path>` command to run manually.
