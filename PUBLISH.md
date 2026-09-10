@@ -5,7 +5,7 @@
 Do **not** push routine commits directly to `main`. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```bash
-cd /Users/abiyadav/SourceCode/spec-kit-worktree-parallel
+cd /path/to/spec-kit-worktree-parallel
 git fetch origin && git checkout -b your-branch origin/main
 # … commit …
 git push -u origin your-branch

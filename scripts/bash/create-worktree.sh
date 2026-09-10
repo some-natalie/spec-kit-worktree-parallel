@@ -7,7 +7,7 @@
 #   create-worktree.sh [options] <branch-name>
 #
 # Options:
-#   --layout sibling|nested   Override config layout (default: sibling)
+#   --layout sibling|nested   Override config layout (default: nested)
 #   --path <dir>              Explicit worktree path (overrides layout)
 #   --in-place                Skip worktree creation; no-op exit 0
 #   --json                    Output JSON instead of key=value

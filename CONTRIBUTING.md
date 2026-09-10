@@ -13,8 +13,15 @@ This is a public repository. Changes should follow the usual **GitHub flow**: wo
    ```
 
 3. Make commits with clear messages.
-4. **Push** your branch and open a **pull request** targeting `main`.
-5. Wait for CI (GitHub Actions) to pass and for maintainer review.
+4. Run the script tests locally — CI runs the same two on Ubuntu and macOS:
+
+   ```bash
+   bash tests/test-create-worktree.sh
+   bash tests/test-post-install.sh
+   ```
+
+5. **Push** your branch and open a **pull request** targeting `main`.
+6. Wait for CI (GitHub Actions) to pass and for maintainer review.
 
 ## For maintainers
 

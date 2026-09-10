@@ -63,7 +63,7 @@ Environment variable `SPECIFY_WORKTREE_PATH` overrides the computed path entirel
    The script reads `worktree-config.yml` automatically and outputs JSON:
 
    ```json
-   {"branch":"005-user-auth","worktree":true,"path":"/Users/me/code/MyProject--005-user-auth","layout":"sibling"}
+   {"branch":"005-user-auth","worktree":true,"path":"/Users/me/code/MyProject/.worktrees/005-user-auth","layout":"nested"}
    ```
 
    If the script is unavailable (e.g., non-bash environment), perform the equivalent operations directly:
@@ -81,8 +81,8 @@ Environment variable `SPECIFY_WORKTREE_PATH` overrides the computed path entirel
    | Field | Value |
    |-------|-------|
    | **Branch** | 005-user-auth |
-   | **Layout** | sibling |
-   | **Worktree path** | /Users/me/code/MyProject--005-user-auth |
+   | **Layout** | nested |
+   | **Worktree path** | /Users/me/code/MyProject/.worktrees/005-user-auth |
    | **Spec artifacts** | spec.md, plan.md |
 
    **Next steps:**

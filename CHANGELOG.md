@@ -18,6 +18,8 @@
 
 ### Changed
 
+- Catalog entry reports 4 commands, matching the command set since `/speckit.worktrees.specify` was added
+- `create-worktree.sh --help` header and the `/speckit.worktrees.create` examples show the `nested` default instead of the pre-1.2.0 `sibling` one
 - Repository, download, and documentation URLs now point at `some-natalie/spec-kit-worktree-parallel`, the repository that publishes this extension
 - README now documents the recommended response to "pre-hook for specify": use an explicit worktree-first command unless Spec Kit itself can also switch the active project root for the rest of `/speckit.specify`
 

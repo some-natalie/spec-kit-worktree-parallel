@@ -119,6 +119,8 @@ vscode_open_after_create: false
 vscode_open_mode: "new-window"   # new-window | reuse-window | print-command
 ```
 
+`sibling_pattern` and `dotworktrees_dir` must be relative paths without `..`; an absolute value or one that escapes the repo is refused. Same reason: this file travels with the repository, so it does not get to choose where worktrees land on your disk.
+
 The editor command is not set here. It defaults to `code` and is overridden with the `SPECIFY_WORKTREE_OPEN_CMD` environment variable — see [Editor handoff](#editor-handoff). This file lives in the repository being worked on, so a command name read from it would let repository content decide what gets executed.
 
 ## How worktrees stay isolated
@@ -214,6 +216,9 @@ bash scripts/bash/create-worktree.sh --json --layout sibling 005-user-auth
 
 # Explicit path
 bash scripts/bash/create-worktree.sh --json --path /tmp/my-worktree 005-user-auth
+
+# Branch from current HEAD instead of the auto-detected base (main / origin/main)
+bash scripts/bash/create-worktree.sh --json --base-ref HEAD 005-user-auth
 
 # Dry run (compute path without creating)
 bash scripts/bash/create-worktree.sh --json --dry-run 005-user-auth
