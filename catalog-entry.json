@@ -5,11 +5,11 @@
     "description": "Default-on worktree isolation for parallel agents — sibling or nested layout",
     "author": "dango85",
     "version": "1.4.0",
-    "download_url": "https://github.com/some-natalie/spec-kit-worktree-parallel/archive/refs/tags/v1.4.0.zip",
-    "repository": "https://github.com/some-natalie/spec-kit-worktree-parallel",
-    "homepage": "https://github.com/some-natalie/spec-kit-worktree-parallel",
-    "documentation": "https://github.com/some-natalie/spec-kit-worktree-parallel/blob/main/README.md",
-    "changelog": "https://github.com/some-natalie/spec-kit-worktree-parallel/blob/main/CHANGELOG.md",
+    "download_url": "https://github.com/dango85/spec-kit-worktree-parallel/archive/refs/tags/v1.4.0.zip",
+    "repository": "https://github.com/dango85/spec-kit-worktree-parallel",
+    "homepage": "https://github.com/dango85/spec-kit-worktree-parallel",
+    "documentation": "https://github.com/dango85/spec-kit-worktree-parallel/blob/main/README.md",
+    "changelog": "https://github.com/dango85/spec-kit-worktree-parallel/blob/main/CHANGELOG.md",
     "license": "MIT",
     "requires": {
       "speckit_version": ">=0.4.0"

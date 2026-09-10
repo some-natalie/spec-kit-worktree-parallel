@@ -1,6 +1,6 @@
 # spec-kit-worktree-parallel
 
-[![Tests](https://github.com/some-natalie/spec-kit-worktree-parallel/actions/workflows/test.yml/badge.svg)](https://github.com/some-natalie/spec-kit-worktree-parallel/actions/workflows/test.yml)
+[![Tests](https://github.com/dango85/spec-kit-worktree-parallel/actions/workflows/test.yml/badge.svg)](https://github.com/dango85/spec-kit-worktree-parallel/actions/workflows/test.yml)
 
 **Contributing:** use a **branch + pull request** into `main` — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -19,7 +19,7 @@ This extension **does not** change another extension’s configuration on instal
 ## Installation
 
 ```bash
-specify extension add worktrees --from https://github.com/some-natalie/spec-kit-worktree-parallel/archive/refs/tags/v1.4.0.zip
+specify extension add worktrees --from https://github.com/dango85/spec-kit-worktree-parallel/archive/refs/tags/v1.4.0.zip
 ```
 
 ## Cursor IDE: best results with Spec Kit

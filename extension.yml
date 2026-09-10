@@ -6,7 +6,7 @@ extension:
   version: "1.4.0"
   description: "Default-on worktree isolation for parallel agents — sibling or nested layout"
   author: "dango85"
-  repository: "https://github.com/some-natalie/spec-kit-worktree-parallel"
+  repository: "https://github.com/dango85/spec-kit-worktree-parallel"
   license: "MIT"
   install_notes: |
     Cursor users: for agent isolation aligned with the editor, prefer /worktree + .cursor/worktrees.json
