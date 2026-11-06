@@ -276,6 +276,40 @@ else
 fi
 cleanup; trap - EXIT
 
+# Test 16: a relative --path with a missing parent must fail, not resolve to "/"
+echo "[16] rejects --path whose parent does not exist"
+TEMP_DIR=$(setup_temp_repo)
+trap cleanup EXIT
+assert_exit "missing --path parent exits 1" 1 \
+  bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" --path no/such/dir/wt 005-badpath
+# The old fallback emitted "/wt" (filesystem root); make sure that is gone.
+output=$(bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" --path no/such/dir/wt 005-badpath 2>&1 || true)
+TOTAL=$((TOTAL + 1))
+if printf '%s' "$output" | grep -qF '"path":"/wt"'; then
+  FAIL=$((FAIL + 1)); echo "  FAIL: resolved to filesystem root: $output"
+else
+  PASS=$((PASS + 1)); echo "  PASS: no filesystem-root path emitted"
+fi
+# An existing relative parent still resolves against the repo root.
+mkdir -p "$TEMP_DIR/sub"
+output=$(bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" --path sub/wt 005-goodpath)
+assert_contains "existing relative parent resolves" "\"$TEMP_DIR/sub/wt\"" "$output"
+cleanup; trap - EXIT
+
+# Test 17: sibling_pattern names one directory, so '/' is refused
+echo "[17] rejects slashes in sibling_pattern"
+TEMP_DIR=$(setup_temp_repo)
+trap cleanup EXIT
+mkdir -p "$TEMP_DIR/.specify/extensions/worktrees"
+CONFIG="$TEMP_DIR/.specify/extensions/worktrees/worktree-config.yml"
+printf 'layout: "sibling"\nsibling_pattern: ".config/systemd/user/{{branch}}"\n' > "$CONFIG"
+assert_exit "rejects nested sibling_pattern" 1 \
+  bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" 005-nested-sibling
+printf 'layout: "sibling"\nsibling_pattern: "{{repo}}--{{branch}}"\n' > "$CONFIG"
+assert_exit "still accepts the default pattern" 0 \
+  bash "$CREATE_SCRIPT" --json --dry-run --repo-root "$TEMP_DIR" 005-ok-sibling
+cleanup; trap - EXIT
+
 # --- summary ---
 echo ""
 echo "=== Results: $PASS/$TOTAL passed, $FAIL failed ==="

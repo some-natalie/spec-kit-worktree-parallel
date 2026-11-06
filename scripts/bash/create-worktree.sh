@@ -108,7 +108,18 @@ validate_relative_component() {
   esac
 }
 
-# --- resolve repo root ---
+# The sibling pattern names one directory beside the repo. A '/' in it would let
+# repo content pick any writable path under the parent dir, which '..' already can't.
+validate_single_component() {
+  local val="$1" key="$2"
+  case "$val" in
+    */*)
+      echo "Error: config '$key' must be a single directory name without '/' (got '$val')" >&2
+      exit 1
+      ;;
+  esac
+}
+
 if [[ -z "$REPO_ROOT" ]]; then
   REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
     echo "Error: not inside a git repository" >&2; exit 1
@@ -153,6 +164,7 @@ SIBLING_PATTERN=$(load_config_value "sibling_pattern" '{{repo}}--{{branch}}')
 DOTWORKTREES_DIR=$(load_config_value "dotworktrees_dir" ".worktrees")
 
 validate_relative_component "$SIBLING_PATTERN" "sibling_pattern"
+validate_single_component "$SIBLING_PATTERN" "sibling_pattern"
 validate_relative_component "$DOTWORKTREES_DIR" "dotworktrees_dir"
 
 # env override
@@ -166,10 +178,16 @@ resolve_worktree_path() {
     if [[ "$WORKTREE_PATH_OVERRIDE" = /* ]]; then
       echo "$WORKTREE_PATH_OVERRIDE"
     else
-      local _d _f
+      local _d _f _parent
       _d=$(dirname "$WORKTREE_PATH_OVERRIDE")
       _f=$(basename "$WORKTREE_PATH_OVERRIDE")
-      echo "$(cd "$REPO_ROOT" && cd "$_d" 2>/dev/null && pwd)/$_f"
+      # Without this check a missing parent left the cd unresolved and the path
+      # became "/$_f" — the filesystem root, not a directory under the repo.
+      if ! _parent=$(cd "$REPO_ROOT" && cd "$_d" 2>/dev/null && pwd); then
+        echo "Error: parent directory of --path '$WORKTREE_PATH_OVERRIDE' does not exist (relative to $REPO_ROOT)" >&2
+        exit 1
+      fi
+      echo "${_parent}/$_f"
     fi
     return
   fi
