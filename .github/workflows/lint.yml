@@ -17,12 +17,9 @@ jobs:
     name: Super-Linter
     runs-on: ubuntu-latest
     permissions:
-      # Read-only checkout of the repo under lint.
-      contents: read
-      # Super-linter posts a summary comment on the PR.
-      pull-requests: write
-      # Super-linter reports per-linter status checks (MULTI_STATUS).
-      statuses: write
+      contents: read  # Read-only checkout of the repo under lint.
+      pull-requests: write  # Super-linter posts a summary comment on the PR.
+      statuses: write  # Super-linter reports per-linter status checks (MULTI_STATUS).
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
