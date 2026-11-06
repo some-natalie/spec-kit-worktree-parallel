@@ -12,6 +12,7 @@ layout: "nested"
 auto_create: true
 
 # Pattern for sibling-dir names. Available placeholders: {{repo}}, {{branch}}.
+# Must be a single directory name: no "/", no "..", not absolute.
 sibling_pattern: "{{repo}}--{{branch}}"
 
 # Directory name for nested layout (relative to repo root, auto-gitignored).

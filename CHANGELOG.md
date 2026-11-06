@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Security
+
+- `sibling_pattern` is rejected when it contains `/`. It names a single directory beside the repo, but a value like `.config/systemd/user/{{branch}}` passed the existing absolute-path and `..` checks and let repository content choose any writable path under the repo's parent directory
+- A relative `--path` whose parent directory does not exist now exits 1. The unresolved `cd` previously left the target as `/<basename>`, placing the worktree at the filesystem root
+
 ## 1.4.0
 
 ### Security
